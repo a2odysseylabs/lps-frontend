@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
 import { LoginForm } from './components/Auth/LoginForm';
 import { Dashboard } from './pages/Dashboard';
+import { EventDetails } from './pages/EventDetails';
 
 function App() {
   return (
@@ -21,6 +22,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/:eventId"
+              element={
+                <ProtectedRoute>
+                  <EventDetails />
                 </ProtectedRoute>
               }
             />

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { api } from "../services/api";
+import { Link } from 'react-router-dom';
 
 type Event = {
   _id: string;
@@ -26,39 +27,40 @@ export const Dashboard: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [newEvent, setNewEvent] = useState({
     name: "",
     startDate: "",
     endDate: "",
     clientId: "",
   });
+  const [newClient, setNewClient] = useState({
+    name: "",
+    logo: null as File | null,
+  });
+  const [isCreatingClient, setIsCreatingClient] = useState(false);
 
-  // Fetch events
+  // Fetch events and clients
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get("/events");
-        setEvents(response.data.events);
+        setLoading(true); // Start loading
+        const [eventsResponse, clientsResponse] = await Promise.all([
+          api.get("/events"),
+          api.get("/clients"),
+        ]);
+
+        setEvents(eventsResponse.data.events);
+        setClients(clientsResponse.data.clients);
       } catch (error) {
-        console.error("Failed to fetch events:", error);
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
-    fetchEvents();
-  }, []);
-
-  // Fetch clients
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await api.get("/clients");
-        setClients(response.data.clients);
-      } catch (error) {
-        console.error("Failed to fetch clients:", error);
-      }
-    };
-
-    fetchClients();
+    fetchData();
   }, []);
 
   // Filter events based on search query
@@ -68,7 +70,6 @@ export const Dashboard: React.FC = () => {
 
   // Handle create event
   const handleCreateEvent = async () => {
-    // Validation for empty fields
     if (
       !newEvent.name.trim() ||
       !newEvent.startDate.trim() ||
@@ -78,9 +79,8 @@ export const Dashboard: React.FC = () => {
       alert("All fields are required. Please fill them out.");
       return;
     }
-  
+
     try {
-      // Submit the event creation request
       await api.post("/events", newEvent);
       setIsModalOpen(false); // Close the modal on success
       setNewEvent({ name: "", startDate: "", endDate: "", clientId: "" }); // Reset the form
@@ -90,7 +90,58 @@ export const Dashboard: React.FC = () => {
       console.error("Failed to create event:", error);
       alert("Failed to create event. Please try again.");
     }
-  };  
+  };
+
+  // Handle create client
+  const handleCreateClient = async () => {
+    if (!newClient.name.trim() || !newClient.logo) {
+      alert("Both client name and logo are required.");
+      return;
+    }
+
+    setIsCreatingClient(true);
+
+    try {
+      // Upload logo to AWS S3
+      const formData = new FormData();
+      formData.append("image", newClient.logo!);
+
+      const uploadResponse = await api.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const logoUrl = uploadResponse.data.url;
+
+      // Create client
+      await api.post("/clients", {
+        clientName: newClient.name,
+        clientLogo: logoUrl,
+      });
+
+      alert("Client created successfully.");
+      setIsClientModalOpen(false);
+      setNewClient({ name: "", logo: null });
+
+      // Refresh clients list
+      const response = await api.get("/clients");
+      setClients(response.data.clients);
+    } catch (error) {
+      console.error("Error creating client:", error);
+      alert("Failed to create client. Please try again.");
+    } finally {
+      setIsCreatingClient(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500 text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -121,9 +172,10 @@ export const Dashboard: React.FC = () => {
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((event) => (
               <div
-                key={event._id}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
-              >
+              key={event._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+            >
+              <Link to={`/dashboard/${event._id}`}>
                 <img
                   className="w-full h-48 object-cover"
                   src={event.clientId.clientLogo}
@@ -131,23 +183,21 @@ export const Dashboard: React.FC = () => {
                 />
                 <div className="p-4">
                   <div className="text-sm text-gray-500">
-                    {event.clientId.clientName} •{" "}
+                    {event.clientId.clientName} •{' '}
                     {new Date(event.startDate).toLocaleDateString()}
                   </div>
                   <h2 className="mt-2 text-lg font-bold text-gray-900">
                     {event.name}
                   </h2>
-                  {/* <div className="mt-2 text-sm text-gray-500">
-                    1,234 Photos • 4 Folders
-                  </div> */}
                 </div>
-              </div>
+              </Link>
+            </div>
             ))}
           </div>
         </div>
       </main>
 
-      {/* Modal */}
+      {/* New Event Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -198,7 +248,13 @@ export const Dashboard: React.FC = () => {
                     </option>
                   ))}
                 </select>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  onClick={() => {
+                    setIsModalOpen(false); // Close Event Modal
+                    setIsClientModalOpen(true); // Open Client Modal
+                  }}
+                >
                   New Client
                 </button>
               </div>
@@ -207,6 +263,73 @@ export const Dashboard: React.FC = () => {
                 className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
               >
                 Create Event
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Client Modal */}
+      {isClientModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Create New Client</h2>
+              <button onClick={() => setIsClientModalOpen(false)}>&times;</button>
+            </div>
+            <div className="space-y-4">
+              {/* Client Name */}
+              <input
+                type="text"
+                placeholder="Name"
+                className="border rounded-md p-2 w-full shadow-sm"
+                value={newClient.name}
+                onChange={(e) =>
+                  setNewClient({ ...newClient, name: e.target.value })
+                }
+              />
+
+              {/* Logo Upload */}
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 border rounded-md flex items-center justify-center">
+                  {newClient.logo ? (
+                    <img
+                      src={URL.createObjectURL(newClient.logo)}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400">No Logo</span>
+                  )}
+                </div>
+                <label
+                  htmlFor="logoUpload"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
+                >
+                  Select Logo
+                </label>
+                <input
+                  id="logoUpload"
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setNewClient({ ...newClient, logo: e.target.files[0] });
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Create Client Button */}
+              <button
+                onClick={handleCreateClient}
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md w-full ${
+                  isCreatingClient ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isCreatingClient}
+              >
+                {isCreatingClient ? "Creating Client..." : "Create Client"}
               </button>
             </div>
           </div>
