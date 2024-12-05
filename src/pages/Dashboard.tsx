@@ -4,11 +4,18 @@ import type { RootState } from "../store";
 import { api } from "../services/api";
 import { Link } from 'react-router-dom';
 
+type Collection = {
+  collection_name: string;
+  collection_folder: string;
+  images: { src_key: string }[];
+};
+
 type Event = {
   _id: string;
   name: string;
   startDate: string;
   endDate: string;
+  eventCollections: Collection[][];
   clientId: {
     _id: string;
     clientName: string;
@@ -170,29 +177,42 @@ export const Dashboard: React.FC = () => {
 
           {/* Event Cards */}
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredEvents.map((event) => (
-              <div
-              key={event._id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
-            >
-              <Link to={`/dashboard/${event._id}`}>
-                <img
-                  className="w-full h-48 object-cover"
-                  src={event.clientId.clientLogo}
-                  alt={event.clientId.clientName}
-                />
-                <div className="p-4">
-                  <div className="text-sm text-gray-500">
-                    {event.clientId.clientName} •{' '}
-                    {new Date(event.startDate).toLocaleDateString()}
-                  </div>
-                  <h2 className="mt-2 text-lg font-bold text-gray-900">
-                    {event.name}
-                  </h2>
+            {filteredEvents.map((event) => {
+              const totalImages = event.eventCollections
+                .flat()
+                .reduce((count, collection) => count + collection.images.length, 0);
+
+              return (
+                <div
+                  key={event._id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                >
+                  <Link to={`/dashboard/${event._id}`}>
+                    <img
+                      className="w-full h-48 object-cover"
+                      src={event.clientId.clientLogo}
+                      alt={event.clientId.clientName}
+                    />
+                    <div className="p-4">
+                      <div className="text-sm text-gray-500">
+                        {event.clientId.clientName} •{" "}
+                        {new Date(event.startDate).toLocaleDateString()}
+                      </div>
+                      <h2 className="mt-2 text-lg font-bold text-gray-900">
+                        {event.name}
+                      </h2>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {event.eventCollections.length > 0
+                          ? `${totalImages} image${totalImages === 1 ? "" : "s"} in ${
+                              event.eventCollections.length
+                            } folder${event.eventCollections.length === 1 ? "" : "s"}`
+                          : "No images available"}
+                      </div>
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-            </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>
