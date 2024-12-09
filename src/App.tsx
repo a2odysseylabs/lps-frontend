@@ -7,6 +7,7 @@ import { Home } from './pages/Home';
 import { LoginForm } from './components/Auth/LoginForm';
 import { Dashboard } from './pages/Dashboard';
 import { EventDetails } from './pages/EventDetails';
+import { FindYourPhotos } from './pages/Attendee';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/attendee" element={<FindYourPhotos />} />
             <Route
               path="/dashboard"
               element={
