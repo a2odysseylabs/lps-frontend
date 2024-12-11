@@ -16,27 +16,27 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-neutral-50 shadow-md fixed top-0 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Camera className="h-8 w-8 text-indigo-600" />
-            <span className="ml-2 text-xl font-bold text-gray-900">
-              Instant Photo Share
+            <Camera className="h-8 w-8 text-blue-500" />
+            <span className="ml-2 text-xl font-bold">
+              Instant<span className="text-blue-500">Photo</span>Gallery
             </span>
           </div>
 
           {isAuthenticated && (
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-gray-500" />
-                <span className="text-gray-700">{user?.username}</span>
+                <User className="" />
+                <span className="">{user?.username}</span>
               </div>
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center text-gray-700 hover:text-gray-900"
+                className=""
               >
-                <LogOut className="h-5 w-5" />
+                Logout
               </button>
             </div>
           )}
