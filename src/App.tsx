@@ -13,7 +13,7 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-200">
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />

@@ -1,29 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import { api } from '../services/api';
 import { EventHeader } from '../components/Layout/EventHeader'
 import { LeftPanel } from '../components/Layout/LeftPanel';
 import { RightGrid } from '../components/Layout/RightGrid';
 import { EditView } from '../components/Layout/EditView';
-
-type Collection = {
-  collection_name: string;
-  collection_folder: string;
-  images: { src_key: string }[];
-};
-
-type Event = {
-  _id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  eventCollections: Collection[][];
-  clientId: {
-    _id: string;
-    clientName: string;
-    clientLogo: string;
-  };
-};
+import { Event, Collection } from '../types/globalTypes';
 
 export const EventDetails: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();

@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-login {
+    background-image: url('/public/images/loginBg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.raised-large {
+    box-shadow: 
+        -12px -12px 24px 0px rgba(255, 255, 255, .7), /* Top white shadow */
+        12px 12px 24px 0px rgba(0, 0, 0, 0.1);  /* Bottom black shadow */ 
+}
+.raised-medium {
+    box-shadow: 
+        -4px -4px 8px 2px rgba(255, 255, 255, .7), /* Top white shadow */
+        4px 4px 8px -2px rgba(0, 0, 0, 0.1);  /* Bottom black shadow */ 
+}
+.raised-small {
+    box-shadow: 
+        -4px -4px 6px 0px rgba(255, 255, 255, .7), /* Top white shadow */
+        4px 4px 6px 0px rgba(0, 0, 0, 0.1);  /* Bottom black shadow */ 
+}
