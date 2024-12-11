@@ -1,31 +1,49 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import authReducer from './slices/authSlice';
+import authReducer, { clearAuthState } from './slices/authSlice';
 
-// Configuration for persisting the auth slice
 const persistConfig = {
   key: 'auth',
   storage,
+  blacklist: ['isLoading', 'error'],
 };
 
-// Wrap the authReducer with persistReducer
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
-    auth: persistedAuthReducer, // Use the persisted reducer
+    auth: persistedAuthReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore Redux Persist actions
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/PURGE'],
       },
     }),
 });
 
 export const persistor = persistStore(store);
+
+// Function to check cookies and reset state if necessary
+export const checkCookiesAndState = async () => {
+  const cookies: Record<string, string> = document.cookie
+    .split(';')
+    .map((cookie) => cookie.trim())
+    .reduce((acc, cookie) => {
+      const [key, value] = cookie.split('=');
+      acc[key] = value || '';
+      return acc;
+    }, {} as Record<string, string>);
+
+  if (!cookies['refreshToken']) {
+    store.dispatch(clearAuthState());
+    localStorage.clear();
+    await persistor.purge();
+  }
+};
+
+checkCookiesAndState();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

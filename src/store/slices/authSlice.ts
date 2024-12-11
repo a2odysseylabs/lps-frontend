@@ -1,10 +1,11 @@
+// authSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { AuthState, LoginCredentials } from '../../types/auth';
 import { api } from '../../services/api';
 
 const initialState: AuthState = {
-  user: null, // Stores user data
-  isAuthenticated: false, // Boolean to track if the user is logged in
+  user: null,
+  isAuthenticated: false,
   isLoading: false,
   error: null,
 };
@@ -17,13 +18,20 @@ export const login = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk('auth/logout', async () => {
+export const logout = createAsyncThunk('auth/logout', async (_, { dispatch }) => {
   await api.post('/logout');
+
   // Clear all cookies
-  document.cookie.split(";").forEach((cookie) => {
-    const [name] = cookie.split("=");
+  document.cookie.split(';').forEach((cookie) => {
+    const [name] = cookie.split('=');
     document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   });
+
+  // Clear local storage
+  localStorage.clear();
+
+  // Reset Redux state
+  dispatch(clearAuthState());
 });
 
 export const refreshToken = createAsyncThunk('auth/refreshToken', async () => {
@@ -36,6 +44,12 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     clearError: (state) => {
+      state.error = null;
+    },
+    clearAuthState: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.isLoading = false;
       state.error = null;
     },
   },
@@ -65,5 +79,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, clearAuthState } = authSlice.actions;
 export default authSlice.reducer;
