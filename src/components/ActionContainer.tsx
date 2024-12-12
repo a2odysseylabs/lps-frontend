@@ -18,7 +18,7 @@ const ActionContainer: React.FC<ActionContainerProps> = ({
     return (
         <div 
             className={classNames(
-                "action-container relative raised-medium rounded-xl bg-neutral-200 p-8", className, props
+                "action-container relative raised-medium rounded-xl bg-gray-200 p-8", className, props
             )}
         >
             {onClose && (

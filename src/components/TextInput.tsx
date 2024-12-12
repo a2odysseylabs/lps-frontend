@@ -19,7 +19,7 @@ const TextInput: React.FC<TextInputProps> = ({
     <div className={classNames("text-input", className)}>
       <label
         htmlFor={id}
-        className="block text-sm font-medium text-gray-700 h-0 text-transparent"
+        className="block h-0 text-transparent"
       >
         {label}
       </label>
@@ -32,7 +32,7 @@ const TextInput: React.FC<TextInputProps> = ({
         <input
           id={id}
           className={classNames(
-            "appearance-none block w-full raised-small bg-white",
+            "appearance-none block w-full raised-small bg-gray-200",
             "pr-3 py-3.5 border-none",
             "rounded-lg shadow-sm placeholder-gray-400",
             "focus:outline-none focus:ring-blue-500 focus:border-blue-500",

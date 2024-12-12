@@ -33,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Modal Overlay */}
       <div
-        className="fixed inset-0 bg-neutral-200/80 backdrop-blur-lg"
+        className="fixed inset-0 bg-gray-200/80 backdrop-blur-lg"
         onClick={onClose}
       />
 
