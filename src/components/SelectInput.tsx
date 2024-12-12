@@ -29,7 +29,7 @@ const SelectInput = <
                 value={value}
                 onChange={onChange}
                 className={classNames(
-                    "select-input appearance-none block w-full raised-small bg-white",
+                    "select-input appearance-none block w-full raised-small bg-gray-200",
                     "pl-4 pr-8 py-3.5 border-none",
                     "rounded-lg shadow-sm placeholder-gray-400",
                     "focus:outline-none focus:ring-blue-500 focus:border-blue-500",

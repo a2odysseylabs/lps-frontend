@@ -136,9 +136,9 @@ export const Dashboard: React.FC = () => {
     }
 
     return (
-        <div className="py-16">
+        <div className="">
             <div className="shadow-md py-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+                <div className="container space-y-4">
                     <h1 className="text-3xl font-bold leading-none">Events</h1>
 
                     <div className="flex items-center justify-between">
@@ -160,7 +160,7 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {/* Event Cards */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="container py-8">
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredEvents.map((event) => {
                         const totalImages = event.eventCollections
@@ -288,7 +288,7 @@ export const Dashboard: React.FC = () => {
                     />
 
                     {/* Logo Upload */}
-                    <div className="flex flex-col items-center space-y-4 bg-neutral-300 rounded-lg p-6">
+                    <div className="flex flex-col items-center space-y-4 bg-gray-300 rounded-lg p-6">
                           {newClient.logo ? (
                               <img
                                   src={URL.createObjectURL(newClient.logo)}

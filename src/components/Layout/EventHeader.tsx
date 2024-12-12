@@ -1,26 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-type EventHeaderProps = {
-  event: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    clientId: { clientName: string };
-  };
+import { Event } from '../../types/globalTypes';
+import Icon from "../Icon";
+import BaseButton from '../BaseButton';
+import SelectInput from '../SelectInput';
+import classNames from 'classnames';
+
+interface EventHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  event: Event;
   onEdit: () => void;
   onBack: () => void;
 };
 
-export const EventHeader: React.FC<EventHeaderProps> = ({ event, onEdit, onBack }) => {
+export const EventHeader: React.FC<EventHeaderProps> = ({ 
+  event, 
+  onEdit,
+  onBack,
+  className
+}) => {
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className={classNames(className, "flex items-center justify-between")}>
       <div className="flex items-center space-x-2">
-        {/* Back Button */}
-        <button onClick={onBack} className="text-gray-500 hover:text-gray-700">
-          &larr; Back
-        </button>
+        <BaseButton as="button" onClick={onBack}>
+          <Icon name="ChevronLeft" size={20} color="gray" />
+        </BaseButton>
         <div>
-          <p className="text-sm text-gray-500">{event.clientId.clientName}</p>
+          <div className="text-sm text-gray-500 flex items-center space-x-2">
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">{event.name}</h1>
           <p className="text-sm text-gray-500">
             {new Date(event.startDate).toLocaleDateString()} -{' '}
@@ -28,12 +34,19 @@ export const EventHeader: React.FC<EventHeaderProps> = ({ event, onEdit, onBack 
           </p>
         </div>
       </div>
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
-        onClick={onEdit}
-      >
-        Edit
-      </button>
+      <SelectInput
+          value="Draft"
+          options={
+            [
+              { value: 'Draft', label: 'Draft' },
+              { value: 'Published', label: 'Published' },
+              { value: 'Archived', label: 'Archived' },
+            ]
+          }
+          onChange={(e) => console.log(e)}
+          placeholder="Draft"
+          required
+      />
     </div>
   );
 };
