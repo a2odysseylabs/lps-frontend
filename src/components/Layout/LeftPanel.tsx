@@ -103,7 +103,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                                                         onSelectCollection(col)
                                                     }
                                                 >
-                                                    {col.collection_name} <span className="text-xs text-gray-500">(1,234)</span>
+                                                    {col.collection_name} <span className="text-xs text-gray-500">({col.images.length})</span>
                                                 </BaseButton>
                                             </li>
                                         ))}
@@ -124,19 +124,21 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                             <p className="text-sm text-gray-500">
                                 Photos uploaded
                             </p>
-                            <p className="font-bold">2,123</p>
+                            <p className="font-bold">
+                                {event.eventCollections.flat().reduce((total, collection) => total + collection.images.length, 0)}
+                            </p>
                         </div>
                         <div className="menu-item menu-item--light">
                             <p className="text-xs text-gray-500">
                                 People spotted
                             </p>
-                            <p className="font-bold">456</p>
+                            <p className="font-bold">N/A</p>
                         </div>
                         <div className="menu-item menu-item--light">
                             <p className="text-xs text-gray-500">
                                 Avg photos per person
                             </p>
-                            <p className="font-bold">4</p>
+                            <p className="font-bold">N/A</p>
                         </div>
                     </div>
                 </div>

@@ -8,6 +8,8 @@ import { LoginForm } from './components/Auth/LoginForm';
 import { Dashboard } from './pages/Dashboard';
 import { EventDetails } from './pages/EventDetails';
 import { FindYourPhotos } from './pages/Attendee';
+import { EventGallery } from './pages/EventGallery';
+import { AttendeeMatches } from './pages/AttendeeMatches';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/attendee" element={<FindYourPhotos />} />
+            <Route path="/clients/:eventId" element={<EventGallery />} />
+            <Route path="/attendee/:attendeeId/matches" element={<AttendeeMatches />} />
             <Route
               path="/dashboard"
               element={

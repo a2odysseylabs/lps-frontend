@@ -23,17 +23,19 @@ export const RightGrid: React.FC<RightGridProps> = ({
                 <div className="flex flex-row">
                     <div className="border-solid border-r-[1px] border-white p-4">
                         <p className="text-sm text-gray-500">Photos uploaded</p>
-                        <p className="font-bold">2,123</p>
+                        <p className="font-bold">
+                            {selectedCollection?.images.length || 0}
+                        </p>
                     </div>
                     <div className="border-solid border-r-[1px] border-white p-4">
                         <p className="text-sm text-gray-500">People spotted</p>
-                        <p className="font-bold">2,123</p>
+                        <p className="font-bold">N/A</p>
                     </div>
                     <div className="border-solid border-r-[1px] border-white p-4">
                         <p className="text-sm text-gray-500">
                             Avg photos per person
                         </p>
-                        <p className="font-bold">2,123</p>
+                        <p className="font-bold">N/A</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +65,7 @@ export const RightGrid: React.FC<RightGridProps> = ({
                                                 }`}
                                                 className="w-full h-auto"
                                             />
-                                            <div>{image.src_key}</div>
+                                            <div>{image.src_key.split('/').pop()}</div>
                                             <div>
                                                 <Icon name="Star" />
                                                 <Icon name="Trash" />
